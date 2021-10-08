@@ -123,6 +123,23 @@ class ItemsController < ApiController
     }
   end
 
+  def destroy
+    provider = current_api_user
+    itemId = params[:id]
+    item = Item.find_by(id: itemId, user_id: provider.id)
+    existed_item = Item.exists?(id: itemId, user_id: provider.id)
+
+    if !existed_item
+      render json: { ok: false, error: "Item doesn't exist" } and return
+    end
+
+    Item.delete(itemId)
+
+    render json: {
+      ok: true,
+    }
+  end
+
   private
 
   def index_params
