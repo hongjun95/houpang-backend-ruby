@@ -12,7 +12,7 @@ class ItemsController < ApiController
     render json: serialize(item)
   end
 
-  def getProductsByCategoryId
+  def getItemsByCategoryId
     page = params[:page].to_i || 1
     sort = params[:sort]
     categoryId = params[:id]
@@ -26,13 +26,34 @@ class ItemsController < ApiController
       render json: { ok: false, error: "Category doesn't exist" } and return
     end
 
-    items = Item.ransack(s: sort).result.page(page)
+    items = Item.ransack(category_id_eq: category.id, s: sort).result.page(page)
     totalData = items.count
 
     render json: { 
       ok: true,
-      products: each_serialize(items, serializer_name: :ItemSerializer),
+      items: each_serialize(items, serializer_name: :ItemSerializer),
       categoryName: category.title,
+      totalResults: totalData,
+      nextPage: items.next_page,
+      hasNextPage: currentCounts < totalData ? true : false,
+      prevPage: page <= 1 ? nil : page - 1,
+      hasPrevPage: page <= 1 ? false : true,
+    }
+  end
+  
+  def getItemsFromProvider
+    current_user = current_api_user
+    page = params[:page].to_i || 1
+    sort = params[:sort]
+    takePages = 10;
+    currentCounts = takePages * page.to_i;
+
+    items = Item.ransack(user_id_eq:current_user.id, s: sort).result.page(page)
+    totalData = items.count
+
+    render json: { 
+      ok: true,
+      items: each_serialize(items, serializer_name: :ItemSerializer),
       totalResults: totalData,
       nextPage: items.next_page,
       hasNextPage: currentCounts < totalData ? true : false,

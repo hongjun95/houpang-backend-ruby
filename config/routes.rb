@@ -24,9 +24,11 @@ Rails.application.routes.draw do
              }
 
   resources :categories
-  get 'items/category/:id', to: 'items#getProductsByCategoryId'
+  get 'items/category/:id', to: 'items#getItemsByCategoryId'
 
+  get 'items/provider', to: 'items#getItemsFromProvider'
   resources :items
+
   resources :images do
     post :dropzone, on: :collection
   end
