@@ -8,4 +8,14 @@ class CategoriesController < ApiController
     category = Category.find(params[:id])
     render json: serialize(category)
   end
+
+  def create
+    category = Category.create(create_params)
+    render json: serialize(category)
+  end
+
+  private
+  def create_params
+    params.require(:category).permit(:title, :coverImg)
+  end
 end
