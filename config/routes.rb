@@ -24,8 +24,15 @@ Rails.application.routes.draw do
              }
 
   resources :categories
+  get 'items/category/:id', to: 'items#getProductsByCategoryId'
+
   resources :items
   resources :images do
     post :dropzone, on: :collection
+  end
+  resources :mypages do
+    collection do
+      put :change_password
+    end
   end
 end

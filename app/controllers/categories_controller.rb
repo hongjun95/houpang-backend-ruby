@@ -15,6 +15,7 @@ class CategoriesController < ApiController
   end
 
   private
+  
   def create_params
     params.require(:category).permit(:title, :coverImg)
   end
