@@ -92,7 +92,10 @@ class ItemsController < ApiController
     create_obj['category_id'] = category.id
         
     item = Item.create!(create_obj)
-    render json: serialize(item)
+    render json: {
+      ok:true,
+      item: serialize(item)
+    }
   end
 
   def update

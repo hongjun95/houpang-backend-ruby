@@ -29,12 +29,9 @@ Rails.application.routes.draw do
   get 'items/provider', to: 'items#getItemsFromProvider'
   resources :items
 
+  resources :likes, only: [:show, :update]
+
   resources :images do
     post :dropzone, on: :collection
-  end
-  resources :mypages do
-    collection do
-      put :change_password
-    end
   end
 end
