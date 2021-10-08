@@ -95,6 +95,34 @@ class ItemsController < ApiController
     render json: serialize(item)
   end
 
+  def update
+    provider = current_api_user
+    itemId = params[:id]
+    categoryName = params[:categoryName];
+
+    item = Item.find_by(id: itemId, user_id: provider.id)
+    existed_item = Item.exists?(id: itemId, user_id: provider.id)
+
+    if !existed_item
+      render json: { ok: false, error: "Item doesn't exist" } and return
+    end
+
+    category = Category.find(item.category_id)
+
+    if categoryName
+      category = Category.find_by(title: categoryName)
+    end
+
+    item.update(create_params)
+    item.category_id = category.id
+    item.save
+
+    render json: {
+      ok: true,
+      item: serialize(item)
+    }
+  end
+
   private
 
   def index_params
