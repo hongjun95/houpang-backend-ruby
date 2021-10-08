@@ -1,15 +1,32 @@
 class ItemsController < ApiController
   def index
-    items = Item.ransack(index_params).result
-    render json: {
+    current_user = current_api_user
+    page = params[:page].to_i || 1
+    sort = params[:sort]
+    query = params[:query]
+    takePages = 10;
+    currentCounts = takePages * page.to_i;
+
+    items = Item.ransack(name_cont:query, s: sort).result.page(page)
+    totalData = items.count
+
+    render json: { 
+      ok: true,
       items: each_serialize(items),
-      total_count: items.count
+      totalResults: totalData,
+      nextPage: items.next_page,
+      hasNextPage: currentCounts < totalData ? true : false,
+      prevPage: page <= 1 ? nil : page - 1,
+      hasPrevPage: page <= 1 ? false : true,
     }
   end
 
   def show
     item = Item.find(params[:id])
-    render json: serialize(item)
+    render json: {
+      ok: true,
+      item: serialize(item)
+    }
   end
 
   def getItemsByCategoryId
