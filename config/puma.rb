@@ -34,5 +34,7 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 #
 # preload_app!
 
+# If you want to execute the server, run 'bundle exec rails s -b localhost -p 3000'
+
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
