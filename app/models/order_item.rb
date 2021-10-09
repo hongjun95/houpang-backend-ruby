@@ -1,5 +1,4 @@
 class OrderItem < ApplicationRecord
-    include ImageUrl # todo 없애야할 것0
     belongs_to :user
     belongs_to :order
     belongs_to :item

@@ -23,6 +23,7 @@ class LikesController < ApiController
             item = Item.find(item_id)
         rescue => exception
             puts "Error #{exception.class}!"
+            puts "Error : #{exception.message}"
             render json: {
                 ok: false,
                 error: "Item doesn't exist" 
@@ -38,6 +39,7 @@ class LikesController < ApiController
                 }
             rescue => exception
                 puts "Error #{exception.class}!"
+                puts "Error : #{exception.message}"
                 render json: {
                     ok: false,
                     error: "Can't find the like list" 
@@ -54,6 +56,7 @@ class LikesController < ApiController
             item = Item.find(item_id)
         rescue => exception
             puts "Error #{exception.class}!"
+            puts "Error : #{exception.message}"
             render json: {
                 ok: false,
                 error: "Item doesn't exist" 
@@ -69,6 +72,7 @@ class LikesController < ApiController
                 }
             rescue => exception
                 puts "Error #{exception.class}!"
+                puts "Error : #{exception.message}"
                 render json: {
                     ok: false,
                     error: "Can't find the like list" 

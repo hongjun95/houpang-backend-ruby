@@ -36,6 +36,9 @@ Rails.application.routes.draw do
   put '/likes/items/:item_id/add', to: 'likes#like_item'
   put '/likes/items/:item_id/remove', to: 'likes#unlike_item'
 
+  # orders
+  post '/orders', to:'orders#create'
+
   resources :images do
     post :dropzone, on: :collection
   end

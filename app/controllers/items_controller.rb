@@ -88,7 +88,7 @@ class ItemsController < ApiController
     category = Category.find_by(title: params['categoryName'])
 
     create_obj = create_params
-    create_obj['user_id'] = current_user.id
+    # create_obj['user_id'] = current_user.id
     create_obj['category_id'] = category.id
         
     item = Item.create!(create_obj)
