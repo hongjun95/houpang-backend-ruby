@@ -23,13 +23,18 @@ Rails.application.routes.draw do
                registrations: "users/registrations"
              }
 
+  # category
   resources :categories
-  get 'items/category/:id', to: 'items#getItemsByCategoryId'
+  get '/items/category/:id', to: 'items#get_items_by_category_id'
 
-  get 'items/provider', to: 'items#getItemsFromProvider'
+  # item
+  get '/items/provider', to: 'items#get_items_from_provider'
   resources :items
 
-  resources :likes, only: [:show, :update]
+  # like
+  get '/likes', to: 'likes#show'
+  put '/likes/items/:item_id/add', to: 'likes#like_item'
+  put '/likes/items/:item_id/remove', to: 'likes#unlike_item'
 
   resources :images do
     post :dropzone, on: :collection

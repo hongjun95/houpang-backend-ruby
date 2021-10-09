@@ -29,7 +29,7 @@ class ItemsController < ApiController
     }
   end
 
-  def getItemsByCategoryId
+  def get_items_by_category_id
     page = params[:page].to_i || 1
     sort = params[:sort]
     categoryId = params[:id]
@@ -58,7 +58,7 @@ class ItemsController < ApiController
     }
   end
   
-  def getItemsFromProvider
+  def get_items_from_provider
     current_user = current_api_user
     page = params[:page].to_i || 1
     sort = params[:sort]
