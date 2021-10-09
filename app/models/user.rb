@@ -6,4 +6,9 @@ class User < ApplicationRecord
   has_many :items, dependent: :nullify
   has_one :like
   enum gender: { unknown: 0, male: 1, female: 2 }
+  enum role: {
+    Consumer: 0,
+    Provider: 1,
+    Admin: 2,
+  }
 end
