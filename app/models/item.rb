@@ -4,6 +4,7 @@ class Item < ApplicationRecord
   belongs_to :user
   belongs_to :category
   has_and_belongs_to_many :likes
+  has_many :order_items, dependent: :destroy
   paginates_per 10
   enum status: { active: 0, disabled: 1 }
 end
