@@ -40,6 +40,7 @@ Rails.application.routes.draw do
   get '/orders/consumer', to:'orders#get_orders_from_consumer'
   get '/orders/provider', to:'orders#get_orders_from_provider'
   get '/orders/:order_id', to:'orders#find_order_by_id'
+  get '/orders/order_item/:order_item_id', to:'orders#find_order_item_by_id'
   post '/orders', to:'orders#create'
 
   resources :images do

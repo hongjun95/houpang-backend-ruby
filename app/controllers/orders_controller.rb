@@ -112,6 +112,27 @@ class OrdersController < ApiController
         end
     end
 
+    def find_order_item_by_id
+        order_item_id = params[:order_item_id]
+        begin
+            order_item = OrderItem.find(order_item_id)
+
+            render json: { 
+                ok: true,
+                order_item: serialize(order_item),
+                
+            }
+        rescue => exception
+            puts "Error #{exception.class}!"
+            puts "Error #{exception.message}"
+            
+            render json: {
+                ok: false,
+                error: "Can't find the order item by Id" 
+            } and return
+        end
+    end
+
     def create
         create_order_items = params[:create_order_items]
         destination = params[:destination]
