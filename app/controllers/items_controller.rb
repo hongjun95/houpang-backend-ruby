@@ -32,11 +32,11 @@ class ItemsController < ApiController
   def get_items_by_category_id
     page = params[:page].to_i || 1
     sort = params[:sort]
-    categoryId = params[:id]
+    category_id = params[:id]
 
     takePages = 10;
-    currentCounts = takePages * page.to_i;
-    category = Category.find(categoryId)
+    current_counts = takePages * page.to_i
+    category = Category.find(category_id)
     existed_category = Category.exists?(id: category.id)
 
     if !existed_category
@@ -48,11 +48,11 @@ class ItemsController < ApiController
 
     render json: { 
       ok: true,
-      items: each_serialize(items, serializer_name: :ItemSerializer),
+      items: each_serialize(items, serializer_name: :ItemEachSerializer),
       categoryName: category.title,
       totalResults: totalData,
       nextPage: items.next_page,
-      hasNextPage: currentCounts < totalData ? true : false,
+      hasNextPage: current_counts < totalData ? true : false,
       prevPage: page <= 1 ? nil : page - 1,
       hasPrevPage: page <= 1 ? false : true,
     }
