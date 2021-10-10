@@ -1,5 +1,5 @@
-  class UserEachSerializer < Panko::Serializer
-    include ImagableSerializer
+class UserEachSerializer < Panko::Serializer
+  include ImagableSerializer
 
-    attributes :id, :email, :name, :description, :follow_id
-  end
+  attributes :id, :email, :name, :description, :follow_id
+end

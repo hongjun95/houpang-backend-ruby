@@ -1,7 +1,7 @@
-  class ItemSerializer < Panko::Serializer
-    include ImagableSerializer
-    attributes :id, :user_id, :name, :list_price, :sale_price, :sale_rate, :description, :category_id, :image_ids, :infos, :productImages
+class ItemSerializer < Panko::Serializer
+  include ImagableSerializer
+  attributes :id, :user_id, :name, :list_price, :sale_price, :sale_rate, :description, :category_id, :image_ids, :infos, :productImages
 
-    has_one :category, serializer: CategorySerializer
-    has_one :user, serializer: UserSerializer
-  end
+  has_one :category, serializer: CategorySerializer
+  has_one :user, serializer: UserSerializer
+end
