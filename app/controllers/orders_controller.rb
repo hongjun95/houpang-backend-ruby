@@ -10,7 +10,7 @@ class OrdersController < ApiController
             order_items = []
 
             order = Order.create!(
-                user_id: consumer.id,
+                consumer_id: consumer.id,
                 total: 0,
                 destination: destination,
                 deliver_request: deliver_request,
@@ -118,35 +118,6 @@ class OrdersController < ApiController
                     error: "Can't find the orders from consumer" 
                 } and return
             end
-
-            # const [orders, totalOrders] = await this.orders.findAndCount({
-            #     where: {
-            #         consumer,
-            #     },
-            #     skip: (page - 1) * takePages,
-            #     take: takePages,
-            #     relations: [
-            #         'orderItems',
-            #         'orderItems.product',
-            #         'orderItems.product.category',
-            #         'orderItems.product.provider',
-            #     ],
-            #     order: {
-            #         createdAt: 'DESC',
-            #     },
-            # });
-    
-            # const paginationObj = createPaginationObj({
-            #     takePages,
-            #     page,
-            #     totalData: totalOrders,
-            # });
-    
-            # return {
-            #     ok: true,
-            #     orders,
-            #     ...paginationObj,
-            # };
         rescue => exception
             puts "Error #{exception.class}!"
             puts "Error : #{exception.message}"
@@ -154,6 +125,54 @@ class OrdersController < ApiController
             render json: {
                 ok: false,
                 error: "Can't find the consumer" 
+            } and return
+        end
+    end
+
+    def get_orders_from_provider
+        provider_id = params[:provider_id]
+        page = params[:page].to_i || 1
+        sort = params[:sort]
+        begin
+            provider = User.find(provider_id)
+
+            takePages = 10;
+            current_counts = takePages * page
+
+            begin
+                order_items = OrderItem.left_joins(:item)
+                        .ransack(user_id_eq: provider.id, s: sort)
+                        .result
+                        .page(page)
+                totalData = order_items.count
+                # byebug order를 5개 아닌 2개만 보이게 하기
+                puts order_items
+
+                render json: { 
+                    ok: true,
+                    order_items: each_serialize(order_items),
+                    totalResults: totalData,
+                    nextPage: order_items.next_page,
+                    hasNextPage: current_counts < totalData ? true : false,
+                    prevPage: page <= 1 ? nil : page - 1,
+                    hasPrevPage: page <= 1 ? false : true,
+                }
+            rescue => exception
+                puts "Error #{exception.class}!"
+                puts "Error #{exception.message}"
+                
+                render json: {
+                    ok: false,
+                    error: "Can't find the order items from provider" 
+                } and return
+            end
+        rescue => exception
+            puts "Error #{exception.class}!"
+            puts "Error : #{exception.message}"
+            
+            render json: {
+                ok: false,
+                error: "Can't find the provider" 
             } and return
         end
     end

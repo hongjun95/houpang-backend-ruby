@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   # orders
   post '/orders', to:'orders#create'
   get '/orders/consumer', to:'orders#get_orders_from_consumer'
+  get '/orders/provider', to:'orders#get_orders_from_provider'
 
   resources :images do
     post :dropzone, on: :collection
