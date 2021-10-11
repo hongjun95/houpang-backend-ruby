@@ -214,4 +214,125 @@ class OrdersController < ApiController
             } and return
         end
     end
+
+    def cancel_oder_item
+        order_item_id = params[:order_item_id]
+        begin
+            @return_obj={}
+
+            # Find the order item
+
+            @sql_find_order_item = "SELECT order_items.* 
+                                    FROM order_items
+                                    WHERE order_items.id = #{order_item_id}
+                                    LIMIT 1;"
+            @order_items = ActiveRecord::Base.connection.execute(@sql_find_order_item)
+
+            if @order_items.count == 0
+                render json: {
+                    ok: false,
+                    error: "Can't find the order item" 
+                } and return
+            end
+
+            
+            @order_item = @order_items[0]
+            @return_obj = @order_item.dup
+
+            # Find the item
+
+            @sql_find_item = "SELECT items.* 
+                                FROM items
+                                WHERE items.id = #{@order_item['item_id']}
+                                ;"
+
+            @items = ActiveRecord::Base.connection.execute(@sql_find_item)
+
+            if @items.count == 0
+                render json: {
+                    ok: false,
+                    error: "Can't find the item" 
+                } and return
+            end
+
+            @item = @items[0]
+            @return_obj['item'] = @item.dup
+
+            # Find the order
+            
+            @sql_find_order = "SELECT orders.* 
+                                FROM orders
+                                WHERE orders.id = #{@order_item['order_id']}
+                                LIMIT 1;"
+            @orders = ActiveRecord::Base.connection.execute(@sql_find_order)
+
+            if @orders.count == 0
+                render json: {
+                    ok: false,
+                    error: "Can't find the order" 
+                } and return
+            end
+
+            @order = @orders[0]
+            @return_obj['order'] = @order.dup
+
+            # Find the consumer
+            
+            @sql_find_consumer = "SELECT users.* 
+                                FROM users
+                                WHERE users.id = #{@order['consumer_id']}
+                                LIMIT 1;"
+
+            @consumers = ActiveRecord::Base.connection.execute(@sql_find_consumer)
+
+            if @consumers.count == 0
+                render json: {
+                    ok: false,
+                    error: "Can't find the consumer" 
+                } and return
+            end
+
+            @return_obj['consumer'] = @consumers[0].dup
+
+            # Change order status Canceld
+
+            @sql_update_order_item_status = "UPDATE order_items
+                                            SET status = #{OrderItem.statuses[:Checking]}
+                                            WHERE id = #{@order_item['id']}
+                                            RETURNING order_items.*
+                                            ;"
+            
+            @new_order_item = ActiveRecord::Base.connection.execute(@sql_update_order_item_status)
+
+            @return_obj = @new_order_item[0].dup
+
+            @orderItem = OrderItem.find(@order_item['id'])
+            @item2 = Item.find(@item['id'])
+
+            sum = @order_item['count'] + @item['stock']
+
+            @sql_update_order_item_status = "UPDATE items
+                                            SET stock = #{sum}
+                                            WHERE id = #{@item['id']}
+                                            RETURNING items.*
+                                            ;"
+            
+            @new_item = ActiveRecord::Base.connection.execute(@sql_update_order_item_status)
+
+            @return_obj['item'] = @new_item[0]
+
+            render json: { 
+                ok: true,
+                order_item: @return_obj,
+            }
+        rescue => exception
+            puts "Error #{exception.class}!"
+            puts "Error #{exception.message}"
+            
+            render json: {
+                ok: false,
+                error: "Can't cancel the order item" 
+            } and return
+        end
+    end
 end
