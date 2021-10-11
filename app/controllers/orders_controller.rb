@@ -303,27 +303,101 @@ class OrdersController < ApiController
                                             ;"
             
             @new_order_item = ActiveRecord::Base.connection.execute(@sql_update_order_item_status)
-
             @return_obj = @new_order_item[0].dup
 
-            @orderItem = OrderItem.find(@order_item['id'])
-            @item2 = Item.find(@item['id'])
-
             sum = @order_item['count'] + @item['stock']
-
             @sql_update_order_item_status = "UPDATE items
                                             SET stock = #{sum}
                                             WHERE id = #{@item['id']}
                                             RETURNING items.*
                                             ;"
-            
             @new_item = ActiveRecord::Base.connection.execute(@sql_update_order_item_status)
-
             @return_obj['item'] = @new_item[0]
 
             render json: { 
                 ok: true,
                 order_item: @return_obj,
+            }
+        rescue => exception
+            puts "Error #{exception.class}!"
+            puts "Error #{exception.message}"
+            
+            render json: {
+                ok: false,
+                error: "Can't cancel the order item" 
+            } and return
+        end
+    end
+
+    def update_order_status
+        order_item_id = params[:order_item_id]
+        order_status = params[:order_status]
+        user = current_api_user
+        begin
+            @return_obj={}
+
+            if user.role == User.Consumer
+                render json: {
+                    ok: false,
+                    error: "You cannot change the order status" 
+                } and return
+            end
+
+            # Find the order item
+
+            @sql_find_order_item = "SELECT order_items.* 
+                                    FROM order_items
+                                    WHERE order_items.id = #{order_item_id}
+                                    LIMIT 1;"
+            @order_items = ActiveRecord::Base.connection.execute(@sql_find_order_item)
+
+            if @order_items.count == 0
+                render json: {
+                    ok: false,
+                    error: "Can't change the order status, because order status is canceld" 
+                } and return
+            end
+            
+            @order_item = @order_items[0]
+
+            if @order_item['status'] == OrderItem.Canceled
+                render json: {
+                    ok: false,
+                    error: "Can't find the order item" 
+                } and return
+            end
+
+            can_edit = true;
+            if user.role == User.Provider
+                if order_status != OrderItem.Received
+                    can_edit = false
+                end
+            elsif user.role == User.Admin
+                if order_status != OrderItem.Delivering && order_status != OrderItem.Delivered
+                    can_edit = false
+                end
+            end
+
+            if !can_edit
+                render json: {
+                    ok: false,
+                    error: "Can't change the order status" 
+                } and return
+            end
+
+            # Change order status Canceld
+
+            @sql_update_order_item_status = "UPDATE order_items
+                                            SET status = #{OrderItem.statuses["#{order_status}"]}
+                                            WHERE id = #{order_item_id}
+                                            RETURNING order_items.*
+                                            ;"
+            @new_order_item = ActiveRecord::Base.connection.execute(@sql_update_order_item_status)
+
+
+            render json: { 
+                ok: true,
+                order_item: @new_order_item[0],
             }
         rescue => exception
             puts "Error #{exception.class}!"

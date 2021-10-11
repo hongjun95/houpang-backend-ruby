@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   get '/orders/order_item/:order_item_id', to:'orders#find_order_item_by_id'
   post '/orders', to:'orders#create'
   put '/orders/order-item/:order_item_id', to:'orders#cancel_oder_item'
+  put '/orders/order-item/:order_item_id/update', to:'orders#update_order_status'
 
   resources :images do
     post :dropzone, on: :collection
