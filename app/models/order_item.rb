@@ -2,6 +2,7 @@ class OrderItem < ApplicationRecord
     belongs_to :user
     belongs_to :order
     belongs_to :item
+    has_one :refund
     enum status: { 
         Checking: 0,
         Received: 1,

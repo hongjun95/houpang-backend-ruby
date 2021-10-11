@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_10_061422) do
+ActiveRecord::Schema.define(version: 2021_10_11_110140) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -131,6 +131,27 @@ ActiveRecord::Schema.define(version: 2021_10_10_061422) do
     t.index ["consumer_id"], name: "index_orders_on_consumer_id"
   end
 
+  create_table "refunds", force: :cascade do |t|
+    t.integer "count"
+    t.integer "status", default: 0
+    t.string "refunded_at"
+    t.string "problem_title"
+    t.string "problem_description"
+    t.string "recall_place"
+    t.datetime "recall_day"
+    t.string "recall_title"
+    t.string "recall_description"
+    t.string "send_place"
+    t.datetime "send_day"
+    t.integer "refund_pay"
+    t.bigint "order_item_id", null: false
+    t.bigint "refundee_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["order_item_id"], name: "index_refunds_on_order_item_id"
+    t.index ["refundee_id"], name: "index_refunds_on_refundee_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -184,4 +205,6 @@ ActiveRecord::Schema.define(version: 2021_10_10_061422) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "users"
   add_foreign_key "orders", "users", column: "consumer_id"
+  add_foreign_key "refunds", "order_items"
+  add_foreign_key "refunds", "users", column: "refundee_id"
 end
