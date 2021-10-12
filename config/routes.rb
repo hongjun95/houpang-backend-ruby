@@ -47,7 +47,7 @@ Rails.application.routes.draw do
 
     # refunds
     get '/refunds/consumer', to:'refunds#get_refunds_from_consumer'
-    # get '/refunds/provider', to:'refunds#get_orders_from_provider'
+    get '/refunds/provider', to:'refunds#get_refunds_from_provider'
     post '/refunds/order-item/:order_item_id/refund', to:'refunds#create'
 
   resources :images do
