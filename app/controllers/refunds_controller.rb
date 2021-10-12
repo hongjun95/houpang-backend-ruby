@@ -94,6 +94,58 @@ class RefundsController < ApiController
         end
     end
 
+    def get_refunds_from_consumer
+        consumer_id = params[:consumer_id]
+        page = params[:page].to_i || 1
+        begin
+            @consumer = User.find(consumer_id)
+            
+            if @consumer.nil?
+                render json: {
+                    ok: false,
+                    error: "Consumer doesn't exist"
+                } and return
+            end
+
+            take_pages = 10;
+            current_counts = take_pages * page
+
+            begin
+                refunds = Refund.ransack(refundee_id_eq: @consumer.id)
+                        .result
+                        .includes(:order_item => :item)
+                        .page(page)
+                total_data = refunds.count
+
+                render json: { 
+                    ok: true,
+                    refunds: each_serialize(refunds),
+                    total_results: total_data,
+                    next_page: refunds.next_page,
+                    has_next_page: current_counts < total_data ? true : false,
+                    prev_page: page <= 1 ? nil : page - 1,
+                    has_prev_page: page <= 1 ? false : true,
+                }
+            rescue => exception
+                puts "Error #{exception.class}!"
+                puts "Error #{exception.message}"
+                
+                render json: {
+                    ok: false,
+                    error: "Can't find the orders from consumer" 
+                } and return
+            end
+        rescue => exception
+            puts "Error #{exception.class}!"
+            puts "Error : #{exception.message}"
+            
+            render json: {
+                ok: false,
+                error: "Can't get refunds from consumer" 
+            } and return
+        end
+    end
+
     private
 
     def create_params

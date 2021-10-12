@@ -6,24 +6,23 @@ class OrdersController < ApiController
         begin
             consumer = User.find(consumer_id)
 
-            takePages = 10;
-            current_counts = takePages * page
+            take_pages = 10;
+            current_counts = take_pages * page
 
             begin
                 orders = Order.ransack(user_id_eq: consumer.id, s: sort)
                         .result
                         .page(page)
-                totalData = orders.count
-                # byebug order를 5개 아닌 2개만 보이게 하기
+                total_data = orders.count
 
-                render json: { 
+                render json: {
                     ok: true,
                     orders: each_serialize(orders),
-                    totalResults: totalData,
-                    nextPage: orders.next_page,
-                    hasNextPage: current_counts < totalData ? true : false,
-                    prevPage: page <= 1 ? nil : page - 1,
-                    hasPrevPage: page <= 1 ? false : true,
+                    total_results: total_data,
+                    next_page: orders.next_page,
+                    has_next_page: current_counts < total_data ? true : false,
+                    prev_page: page <= 1 ? nil : page - 1,
+                    has_prev_page: page <= 1 ? false : true,
                 }
             rescue => exception
                 puts "Error #{exception.class}!"
@@ -52,8 +51,8 @@ class OrdersController < ApiController
         begin
             provider = User.find(provider_id)
 
-            takePages = 10;
-            current_counts = takePages * page
+            take_pages = 10;
+            current_counts = take_pages * page
 
             begin
                 order_items = OrderItem.ransack(user_id_eq: provider.id, s: sort)
