@@ -373,7 +373,7 @@ class OrdersController < ApiController
                     can_edit = false
                 end
             elsif user.role == User.Admin
-                if order_status != OrderItem.Delivering && order_status != OrderItem.Delivered
+                if order_status != OrderItem.Delivering && order_status != OrderItem.statuses['Delivered']
                     can_edit = false
                 end
             end

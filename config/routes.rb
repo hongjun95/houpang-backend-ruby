@@ -45,6 +45,11 @@ Rails.application.routes.draw do
   put '/orders/order-item/:order_item_id', to:'orders#cancel_oder_item'
   put '/orders/order-item/:order_item_id/update', to:'orders#update_order_status'
 
+    # refunds
+    # get '/refunds/consumer', to:'refunds#get_orders_from_consumer'
+    # get '/refunds/provider', to:'refunds#get_orders_from_provider'
+    post '/refunds/order-item/:order_item_id/refund', to:'refunds#create'
+
   resources :images do
     post :dropzone, on: :collection
   end
