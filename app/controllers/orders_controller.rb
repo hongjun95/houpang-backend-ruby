@@ -255,8 +255,7 @@ class OrdersController < ApiController
             end
 
             @item = @items[0]
-            @return_obj['item'] = @item.dup
-
+            
             # Find the order
             
             @sql_find_order = "SELECT orders.* 
@@ -273,7 +272,6 @@ class OrdersController < ApiController
             end
 
             @order = @orders[0]
-            @return_obj['order'] = @order.dup
 
             # Find the consumer
             
@@ -291,18 +289,18 @@ class OrdersController < ApiController
                 } and return
             end
 
-            @return_obj['consumer'] = @consumers[0].dup
-
             # Change order status Canceld
 
             @sql_update_order_item_status = "UPDATE order_items
-                                            SET status = #{OrderItem.statuses[:Checking]}
+                                            SET status = #{OrderItem.statuses[:Canceled]}
                                             WHERE id = #{@order_item['id']}
                                             RETURNING order_items.*
                                             ;"
             
             @new_order_item = ActiveRecord::Base.connection.execute(@sql_update_order_item_status)
             @return_obj = @new_order_item[0].dup
+            @return_obj['order'] = @order.dup
+            @return_obj['consumer'] = @consumers[0].dup
 
             sum = @order_item['count'] + @item['stock']
             @sql_update_order_item_status = "UPDATE items
