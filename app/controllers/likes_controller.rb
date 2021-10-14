@@ -1,13 +1,15 @@
 class LikesController < ApiController
     def show
+        current_user = current_api_user
         begin
-            current_user = current_api_user
             like = Like.find_by(user_id: current_user.id)
             render json: {
                 ok:true,
                 like: serialize(like)
             }
         rescue => exception
+            puts "Error #{exception.class}!"
+            puts "Error : #{exception.message}"
             render json: {
                 ok: false,
                 error: "Can't find like list"
@@ -16,9 +18,9 @@ class LikesController < ApiController
     end
 
     def like_item
+        current_user = current_api_user
         begin
             item_id = params[:item_id]
-            current_user = current_api_user
 
             item = Item.find(item_id)
         rescue => exception

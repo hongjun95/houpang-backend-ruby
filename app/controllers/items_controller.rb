@@ -140,7 +140,6 @@ class ItemsController < ApiController
       end
 
       create_obj = create_params
-      puts category
       create_obj['user_id'] = current_user.id
       create_obj['category_id'] = category.id
           

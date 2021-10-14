@@ -4,6 +4,6 @@ class ItemSerializer < Panko::Serializer
               :category_id, :infos, :product_images
 
   has_one :category, serializer: CategorySerializer
-  has_one :provider, serializer: UserSerializer, :foreign_key => :user_id
+  has_one :provider, serializer: UserSerializer
   # has_many :orders, :foreign_key => :consumer_id
 end
