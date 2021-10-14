@@ -12,7 +12,7 @@ ActiveAdmin.register Item do
   filter :title_cont, label: "#{I18n.t('activerecord.attributes.item.title')} 필터"
   filter :price_eq, label: "#{I18n.t('activerecord.attributes.item.price')} 필터"
   filter :category, label: "#{I18n.t('activerecord.attributes.item.category')} 필터"
-  filter :user, label: "#{I18n.t('activerecord.attributes.item.user')} 필터"
+  # filter :provider, label: "#{I18n.t('activerecord.attributes.item.user')} 필터"
   filter :status_eq, label: "#{I18n.t('activerecord.attributes.item.status')} 필터"
 
   index do

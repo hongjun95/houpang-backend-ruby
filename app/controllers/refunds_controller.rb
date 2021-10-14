@@ -57,7 +57,7 @@ class RefundsController < ApiController
             end
 
             create_obj = create_params
-            create_obj['refundee_id'] = user.id
+            create_obj['user_id'] = user.id
             create_obj['order_item_id'] = order_item.id
             create_obj['refunded_at'] = "#{DateTime.current.year}. #{DateTime.current.month}. #{DateTime.current.day}"
 
@@ -111,7 +111,7 @@ class RefundsController < ApiController
             current_counts = take_pages * page
 
             begin
-                refunds = Refund.ransack(refundee_id_eq: @consumer.id)
+                refunds = Refund.ransack(user_id_eq: @consumer.id)
                         .result
                         .includes(:order_item => :item)
                         .page(page)

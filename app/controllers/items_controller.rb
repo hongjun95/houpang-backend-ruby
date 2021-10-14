@@ -22,11 +22,35 @@ class ItemsController < ApiController
   end
 
   def show
-    item = Item.find(params[:id])
-    render json: {
-      ok: true,
-      item: serialize(item)
-    }
+    begin
+      item = Item.find(params[:id])
+      return_obj = item.attributes
+      begin
+        provider = User.find_by_id(item.user_id)
+        return_obj['provider'] = provider.attributes
+        
+        render json: {
+          ok: true,
+          item: serialize(item, serializer_name: :ItemSerializer)
+        }
+      rescue => exception
+        puts "Error #{exception.class}!"
+        puts "Error : #{exception.message}"
+        
+        render json: {
+            ok: false,
+            error: "Can't find the user by item.user_id" 
+        } and return
+      end
+    rescue => exception
+      puts "Error #{exception.class}!"
+      puts "Error : #{exception.message}"
+      
+      render json: {
+          ok: false,
+          error: "Can't find the item by item id" 
+      } and return
+    end
   end
 
   def get_items_by_category_id
@@ -81,21 +105,46 @@ class ItemsController < ApiController
 
   def create
     current_user = current_api_user
-    existed_item = Item.exists?(name: params['item']['name'], user_id: current_user.id)
-    if existed_item
-      render json: { ok: false, error: "Item already exists" } and return
-    end
-    category = Category.find_by(title: params['categoryName'])
-
-    create_obj = create_params
-    # create_obj['user_id'] = current_user.id
-    create_obj['category_id'] = category.id
+    begin
+      existed_item = Item.exists?(name: params['item']['name'], provider_id: current_user.id)
+      if existed_item
+        render json: {
+            ok: false,
+            error: "Item already exists" 
+        } and return
+      end
+      begin
+        category = Category.find_by(title: params['categoryName'])
+        puts category
+      rescue => exception
+        puts "Error #{exception.class}!"
+        puts "Error : #{exception.message}"
         
-    item = Item.create!(create_obj)
-    render json: {
-      ok:true,
-      item: serialize(item)
-    }
+        render json: {
+            ok: false,
+            error: "Can't find the category" 
+        } and return
+      end
+
+      create_obj = create_params
+      puts category
+      create_obj['provider_id'] = current_user.id
+      create_obj['category_id'] = category.id
+          
+      item = Item.create!(create_obj)
+      render json: {
+        ok:true,
+        item: serialize(item)
+      }
+    rescue => exception
+      puts "Error #{exception.class}!"
+      puts "Error : #{exception.message}"
+      
+      render json: {
+          ok: false,
+          error: "Can't find the item" 
+      } and return
+    end
   end
 
   def update
@@ -150,7 +199,7 @@ class ItemsController < ApiController
   end
 
   def create_params
-    params.require(:item).permit(:name, :sale_price, :stock, :productImages => [], :infos => [:id, :key, :value])
+    params.require(:item).permit(:name, :sale_price, :stock, :product_images => [], :infos => [:id, :key, :value])
   end
 
   def permitted_query

@@ -1,7 +1,20 @@
 class CategoriesController < ApiController
   def index
-    categories = Category.all
-    render json: each_serialize(categories, serializer_name: :CategorySerializer)
+    begin
+      categories = Category.all
+      render json: {
+        ok: true,
+        categories: each_serialize(categories, serializer_name: :CategorySerializer)
+      }
+    rescue => exception
+      puts "Error #{exception.class}!"
+      puts "Error : #{exception.message}"
+      
+      render json: {
+          ok: false,
+          error: "Can't get categories" 
+      } and return
+    end
   end
 
   def show

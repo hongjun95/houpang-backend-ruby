@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_11_110140) do
+ActiveRecord::Schema.define(version: 2021_10_14_055828) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -66,7 +66,6 @@ ActiveRecord::Schema.define(version: 2021_10_11_110140) do
     t.text "video"
     t.bigint "category_id"
     t.text "description"
-    t.bigint "user_id"
     t.string "image"
     t.integer "status", default: 0
     t.decimal "reviews_average", default: "0.0"
@@ -86,10 +85,11 @@ ActiveRecord::Schema.define(version: 2021_10_11_110140) do
     t.string "images", array: true
     t.float "avgRating"
     t.json "infos", array: true
-    t.string "productImages", array: true
+    t.string "product_images", array: true
+    t.bigint "user_id"
     t.index ["category_id"], name: "index_items_on_category_id"
     t.index ["images"], name: "index_items_on_images", using: :gin
-    t.index ["productImages"], name: "index_items_on_productImages", using: :gin
+    t.index ["product_images"], name: "index_items_on_product_images", using: :gin
     t.index ["user_id"], name: "index_items_on_user_id"
   end
 
@@ -127,8 +127,8 @@ ActiveRecord::Schema.define(version: 2021_10_11_110140) do
     t.string "ordered_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "consumer_id", null: false
-    t.index ["consumer_id"], name: "index_orders_on_consumer_id"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "refunds", force: :cascade do |t|
@@ -145,11 +145,11 @@ ActiveRecord::Schema.define(version: 2021_10_11_110140) do
     t.datetime "send_day"
     t.integer "refund_pay"
     t.bigint "order_item_id", null: false
-    t.bigint "refundee_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "user_id", null: false
     t.index ["order_item_id"], name: "index_refunds_on_order_item_id"
-    t.index ["refundee_id"], name: "index_refunds_on_refundee_id"
+    t.index ["user_id"], name: "index_refunds_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -204,7 +204,7 @@ ActiveRecord::Schema.define(version: 2021_10_11_110140) do
   add_foreign_key "order_items", "items"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "users"
-  add_foreign_key "orders", "users", column: "consumer_id"
+  add_foreign_key "orders", "users"
   add_foreign_key "refunds", "order_items"
-  add_foreign_key "refunds", "users", column: "refundee_id"
+  add_foreign_key "refunds", "users"
 end

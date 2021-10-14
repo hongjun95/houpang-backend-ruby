@@ -143,7 +143,7 @@ class OrdersController < ApiController
             order_items = []
 
             order = Order.create!(
-                consumer_id: consumer.id,
+                user_id: consumer.id,
                 total: 0,
                 destination: destination,
                 deliver_request: deliver_request,
@@ -279,7 +279,7 @@ class OrdersController < ApiController
             
             @sql_find_consumer = "SELECT users.* 
                                 FROM users
-                                WHERE users.id = #{@order['consumer_id']}
+                                WHERE users.id = #{@order['user_id']}
                                 LIMIT 1;"
 
             @consumers = ActiveRecord::Base.connection.execute(@sql_find_consumer)
@@ -333,8 +333,6 @@ class OrdersController < ApiController
         order_status = params[:order_status]
         user = current_api_user
         begin
-            @return_obj={}
-
             if user.role == User.Consumer
                 render json: {
                     ok: false,
