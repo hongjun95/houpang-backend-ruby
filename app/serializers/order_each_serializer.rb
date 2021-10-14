@@ -5,6 +5,5 @@ class OrderEachSerializer < Panko::Serializer
              :ordered_at, :user_id
 
   has_many :order_items, serializer: OrderItemEachSerializer
-  # has_one :consumer, serializer: ConsumerSerializer
-  has_one :user, serializer: ConsumerSerializer
+  has_one :consumer, serializer: ConsumerSerializer
 end
