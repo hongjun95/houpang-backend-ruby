@@ -25,9 +25,9 @@ Rails.application.routes.draw do
 
   # category
   resources :categories
-  get '/items/category/:id', to: 'items#get_items_by_category_id'
-
+  
   # item
+  get '/items/category/:id', to: 'items#get_items_by_category_id'
   get '/items/provider', to: 'items#get_items_from_provider'
   resources :items
 

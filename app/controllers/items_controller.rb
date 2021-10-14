@@ -7,18 +7,28 @@ class ItemsController < ApiController
     takePages = 10;
     currentCounts = takePages * page.to_i;
 
-    items = Item.ransack(name_cont:query, s: sort).result.page(page)
-    totalData = items.count
+    begin
+      items = Item.ransack(name_cont:query, s: sort).result.page(page)
+      totalData = items.count
 
-    render json: { 
-      ok: true,
-      items: each_serialize(items),
-      total_results: totalData,
-      next_page: items.next_page,
-      has_next_page: currentCounts < totalData ? true : false,
-      prev_page: page <= 1 ? nil : page - 1,
-      has_prev_page: page <= 1 ? false : true,
-    }
+      render json: { 
+        ok: true,
+        items: each_serialize(items),
+        total_results: totalData,
+        next_page: items.next_page,
+        has_next_page: currentCounts < totalData ? true : false,
+        prev_page: page <= 1 ? nil : page - 1,
+        has_prev_page: page <= 1 ? false : true,
+      }
+    rescue => exception
+      puts "Error #{exception.class}!"
+      puts "Error : #{exception.message}"
+      
+      render json: {
+          ok: false,
+          error: "Can't find the items" 
+      } and return
+    end
   end
 
   def show
@@ -60,14 +70,7 @@ class ItemsController < ApiController
     takePages = 10;
     current_counts = takePages * page
     begin
-      category = Category.find_by_id(category_id)
-
-      if !category
-        render json: {
-            ok: false,
-            error: "Category doesn't exist"
-        } and return
-      end
+      category = Category.find(category_id)
 
       items = Item.ransack(category_id_eq: category.id, s: sort).result.page(page)
       totalData = items.count
@@ -126,7 +129,6 @@ class ItemsController < ApiController
       end
       begin
         category = Category.find_by(title: params['category_name'])
-        puts category
       rescue => exception
         puts "Error #{exception.class}!"
         puts "Error : #{exception.message}"
@@ -153,7 +155,7 @@ class ItemsController < ApiController
       
       render json: {
           ok: false,
-          error: "Can't find the item" 
+          error: "Can't create the item" 
       } and return
     end
   end
