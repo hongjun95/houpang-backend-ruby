@@ -13,11 +13,11 @@ class ItemsController < ApiController
     render json: { 
       ok: true,
       items: each_serialize(items),
-      totalResults: totalData,
-      nextPage: items.next_page,
-      hasNextPage: currentCounts < totalData ? true : false,
-      prevPage: page <= 1 ? nil : page - 1,
-      hasPrevPage: page <= 1 ? false : true,
+      total_results: totalData,
+      next_page: items.next_page,
+      has_next_page: currentCounts < totalData ? true : false,
+      prev_page: page <= 1 ? nil : page - 1,
+      has_prev_page: page <= 1 ? false : true,
     }
   end
 
@@ -57,29 +57,40 @@ class ItemsController < ApiController
     page = params[:page].to_i || 1
     sort = params[:sort]
     category_id = params[:id]
-
     takePages = 10;
-    current_counts = takePages * page.to_i
-    category = Category.find(category_id)
-    existed_category = Category.exists?(id: category.id)
+    current_counts = takePages * page
+    begin
+      category = Category.find_by_id(category_id)
 
-    if !existed_category
-      render json: { ok: false, error: "Category doesn't exist" } and return
+      if !category
+        render json: {
+            ok: false,
+            error: "Category doesn't exist"
+        } and return
+      end
+
+      items = Item.ransack(category_id_eq: category.id, s: sort).result.page(page)
+      totalData = items.count
+
+      render json: { 
+        ok: true,
+        items: each_serialize(items, serializer_name: :ItemEachSerializer),
+        category_name: category.title,
+        total_results: totalData,
+        next_page: items.next_page,
+        has_next_page: current_counts < totalData ? true : false,
+        prev_page: page <= 1 ? nil : page - 1,
+        has_prev_page: page <= 1 ? false : true,
+      }
+    rescue => exception
+      puts "Error #{exception.class}!"
+      puts "Error : #{exception.message}"
+      
+      render json: {
+          ok: false,
+          error: "Can't find the category" 
+      } and return
     end
-
-    items = Item.ransack(category_id_eq: category.id, s: sort).result.page(page)
-    totalData = items.count
-
-    render json: { 
-      ok: true,
-      items: each_serialize(items, serializer_name: :ItemEachSerializer),
-      categoryName: category.title,
-      totalResults: totalData,
-      nextPage: items.next_page,
-      hasNextPage: current_counts < totalData ? true : false,
-      prevPage: page <= 1 ? nil : page - 1,
-      hasPrevPage: page <= 1 ? false : true,
-    }
   end
   
   def get_items_from_provider
@@ -95,11 +106,11 @@ class ItemsController < ApiController
     render json: { 
       ok: true,
       items: each_serialize(items, serializer_name: :ItemSerializer),
-      totalResults: totalData,
-      nextPage: items.next_page,
-      hasNextPage: currentCounts < totalData ? true : false,
-      prevPage: page <= 1 ? nil : page - 1,
-      hasPrevPage: page <= 1 ? false : true,
+      total_results: totalData,
+      next_page: items.next_page,
+      has_next_page: currentCounts < totalData ? true : false,
+      prev_page: page <= 1 ? nil : page - 1,
+      has_prev_page: page <= 1 ? false : true,
     }
   end
 
@@ -114,7 +125,7 @@ class ItemsController < ApiController
         } and return
       end
       begin
-        category = Category.find_by(title: params['categoryName'])
+        category = Category.find_by(title: params['category_name'])
         puts category
       rescue => exception
         puts "Error #{exception.class}!"
@@ -150,7 +161,7 @@ class ItemsController < ApiController
   def update
     provider = current_api_user
     itemId = params[:id]
-    categoryName = params[:categoryName];
+    category_name = params[:category_name];
 
     item = Item.find_by(id: itemId, user_id: provider.id)
     existed_item = Item.exists?(id: itemId, user_id: provider.id)
@@ -161,8 +172,8 @@ class ItemsController < ApiController
 
     category = Category.find(item.category_id)
 
-    if categoryName
-      category = Category.find_by(title: categoryName)
+    if category_name
+      category = Category.find_by(title: category_name)
     end
 
     item.update(create_params)
