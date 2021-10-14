@@ -106,7 +106,7 @@ class ItemsController < ApiController
   def create
     current_user = current_api_user
     begin
-      existed_item = Item.exists?(name: params['item']['name'], provider_id: current_user.id)
+      existed_item = Item.exists?(name: params['item']['name'], user_id: current_user.id)
       if existed_item
         render json: {
             ok: false,
@@ -128,7 +128,7 @@ class ItemsController < ApiController
 
       create_obj = create_params
       puts category
-      create_obj['provider_id'] = current_user.id
+      create_obj['user_id'] = current_user.id
       create_obj['category_id'] = category.id
           
       item = Item.create!(create_obj)

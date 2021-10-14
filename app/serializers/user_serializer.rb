@@ -1,5 +1,5 @@
 class UserSerializer < Panko::Serializer
   include ImagableSerializer
 
-  attributes :id, :email, :name, :image
+  attributes :id, :email, :name, :image, :phone, :address1
 end
