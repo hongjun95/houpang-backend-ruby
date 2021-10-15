@@ -10,13 +10,13 @@ class ImagesController < ApiController
   end
 
   def dropzone
-    if params[:image].present?
+    if params[:files].present?
       image = Image.create!(
-        image: params[:image],
+        image: params[:files],
         imagable_type: params[:imagable_type],
         imagable_id: params[:imagable_id]
       )
-      render json: image.id
+      render json: image
     end
   end
 
