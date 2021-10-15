@@ -4,13 +4,6 @@ class RefundsController < ApiController
         status = params[:status]
         user = current_api_user
         begin
-            if !user.Consumer?
-                render json: {
-                    ok: false,
-                    error: "Can't refund"
-                } and return
-            end
-
             if (status == "Exchanged" and
                 (create_params[:refund_pay] or
                 create_params[:send_day].nil? or

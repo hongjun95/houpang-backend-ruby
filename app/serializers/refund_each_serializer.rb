@@ -5,5 +5,5 @@ class RefundEachSerializer < Panko::Serializer
              :recall_title, :recall_description, :send_place, :send_day, :order_item_id, :user_id
 
   has_one :order_item, serializer: OrderItemSerializer
-  has_one :user, serializer: UserSerializer
+  has_one :refundee, serializer: UserSerializer
 end
