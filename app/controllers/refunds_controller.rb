@@ -164,7 +164,7 @@ class RefundsController < ApiController
 
             begin
                 refunds = Refund
-                        .joins( :order_item => { :item => :user})
+                        .joins( :order_item => { :item => :provider})
                         .where( :users => { :id => @provider.id })
                         .page(page)
                 total_data = refunds.count
