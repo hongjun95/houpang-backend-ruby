@@ -4,8 +4,8 @@ class ItemsController < ApiController
     page = params[:page].to_i || 1
     sort = params[:sort]
     query = params[:query]
-    takePages = 10;
-    currentCounts = takePages * page.to_i;
+    take_pages = 10;
+    currentCounts = take_pages * page.to_i;
 
     begin
       items = Item.ransack(name_cont:query, s: sort).result.page(page)
@@ -67,8 +67,8 @@ class ItemsController < ApiController
     page = params[:page].to_i || 1
     sort = params[:sort]
     category_id = params[:id]
-    takePages = 10;
-    current_counts = takePages * page
+    take_pages = 10;
+    current_counts = take_pages * page
     begin
       category = Category.find(category_id)
 
@@ -100,8 +100,8 @@ class ItemsController < ApiController
     current_user = current_api_user
     page = params[:page].to_i || 1
     sort = params[:sort]
-    takePages = 10;
-    currentCounts = takePages * page.to_i;
+    take_pages = 10;
+    currentCounts = take_pages * page.to_i;
 
     items = Item.ransack(user_id_eq:current_user.id, s: sort).result.page(page)
     totalData = items.count
