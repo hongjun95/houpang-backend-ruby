@@ -31,18 +31,18 @@ class ReviewsController < ApiController
             create_obj['item_id'] = item.id
 
             review = Review.create!(create_obj)
-            puts review
         
             total_rating = 0;
             reviews_average = 0;
 
             if item.reviews.count > 0
-                reviews_count = item.reviews.count;
-                total_rating = item.reviews_average * reviews_count + rating
-                reviews_average = total_rating / reviews_count;
+                current_reviews_count = item.reviews.count - 1;
+                total_rating = item.reviews_average * current_reviews_count + rating
+                reviews_average = current_reviews_count == 0 ? total_rating : total_rating / (current_reviews_count + 1);
             end
 
             item.reviews_average = reviews_average;
+            item.save!
             
             render json:{
                 ok: true,
