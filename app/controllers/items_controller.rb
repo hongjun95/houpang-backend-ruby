@@ -127,6 +127,7 @@ class ItemsController < ApiController
             error: "Item already exists" 
         } and return
       end
+
       begin
         category = Category.find_by(title: params['category_name'])
       rescue => exception
@@ -211,7 +212,8 @@ class ItemsController < ApiController
   end
 
   def create_params
-    params.require(:item).permit(:name, :sale_price, :stock, :product_images => [], :infos => [:id, :key, :value])
+    params.require(:item).permit(:name, :sale_price, :stock, :infos => [:id, :key, :value])
+    # params.require(:item).permit(:name, :sale_price, :stock, {infos: [:id, :key, :value]}, images_attributes: [])
   end
 
   def permitted_query
