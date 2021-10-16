@@ -62,6 +62,7 @@ class ReviewsController < ApiController
         current_user = current_api_user
         page = params[:page].to_i || 1
         sort = params[:sort] || 'crated_at desc'
+        item_id = params[:item_id]
         take_pages = 8;
         current_counts = take_pages * page.to_i;
     
