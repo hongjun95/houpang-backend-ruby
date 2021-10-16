@@ -158,7 +158,7 @@ class OrdersController < ApiController
                     puts "Error : #{exception.message}"
                     
                     for order_item in order_items do
-                        OrderItem.delete(order_item.id)
+                        OrderItem.destory(order_item.id)
                     end
                     
                     render json: {
@@ -169,7 +169,7 @@ class OrdersController < ApiController
 
                 if item.stock - create_order_item[:count] < 0
                     for order_item in order_items do
-                        OrderItem.delete(order_item.id)
+                        OrderItem.destory(order_item.id)
                     end
                     
                     render json: {

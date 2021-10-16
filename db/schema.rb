@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_15_020517) do
+ActiveRecord::Schema.define(version: 2021_10_16_001118) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,7 +64,6 @@ ActiveRecord::Schema.define(version: 2021_10_15_020517) do
     t.integer "sale_price"
     t.integer "list_price"
     t.text "video"
-    t.bigint "category_id"
     t.text "description"
     t.string "image"
     t.integer "status", default: 0
@@ -86,7 +85,8 @@ ActiveRecord::Schema.define(version: 2021_10_15_020517) do
     t.float "avgRating"
     t.json "infos", array: true
     t.string "product_images", array: true
-    t.bigint "user_id"
+    t.bigint "user_id", null: false
+    t.bigint "category_id", null: false
     t.index ["category_id"], name: "index_items_on_category_id"
     t.index ["images"], name: "index_items_on_images", using: :gin
     t.index ["product_images"], name: "index_items_on_product_images", using: :gin
@@ -108,13 +108,13 @@ ActiveRecord::Schema.define(version: 2021_10_15_020517) do
   end
 
   create_table "order_items", force: :cascade do |t|
-    t.bigint "item_id", null: false
     t.bigint "user_id", null: false
     t.integer "count", default: 1
     t.integer "status", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "order_id"
+    t.bigint "item_id", null: false
     t.index ["item_id"], name: "index_order_items_on_item_id"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["user_id"], name: "index_order_items_on_user_id"
@@ -201,6 +201,8 @@ ActiveRecord::Schema.define(version: 2021_10_15_020517) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "items", "categories"
+  add_foreign_key "items", "users"
   add_foreign_key "likes", "users"
   add_foreign_key "order_items", "items"
   add_foreign_key "order_items", "orders"

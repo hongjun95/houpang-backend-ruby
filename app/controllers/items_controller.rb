@@ -198,7 +198,7 @@ class ItemsController < ApiController
       render json: { ok: false, error: "Item doesn't exist" } and return
     end
 
-    Item.delete(itemId)
+    Item.destroy(itemId)
 
     render json: {
       ok: true,
@@ -213,7 +213,6 @@ class ItemsController < ApiController
 
   def create_params
     params.require(:item).permit(:name, :sale_price, :stock, :infos => [:id, :key, :value])
-    # params.require(:item).permit(:name, :sale_price, :stock, {infos: [:id, :key, :value]}, images_attributes: [])
   end
 
   def permitted_query
