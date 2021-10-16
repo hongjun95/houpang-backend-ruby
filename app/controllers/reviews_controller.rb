@@ -31,6 +31,7 @@ class ReviewsController < ApiController
             create_obj['item_id'] = item.id
 
             review = Review.create!(create_obj)
+            puts review
         
             total_rating = 0;
             reviews_average = 0;
