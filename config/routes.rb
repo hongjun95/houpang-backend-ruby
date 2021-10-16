@@ -54,4 +54,6 @@ Rails.application.routes.draw do
     post :dropzone, on: :collection
   end
   post '/images/uploads_multiple', to:'images#create_images'
+
+  resources :reviews
 end
